@@ -1,0 +1,6 @@
+[console_scripts]
+initialize_service_db = services.initialize_db:main
+
+[paste.app_factory]
+main = services:main
+
