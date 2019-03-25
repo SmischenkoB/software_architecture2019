@@ -1,0 +1,12 @@
+deform
+pyramid
+pyramid_chameleon
+pyramid_tm
+sqlalchemy
+waitress
+zope.sqlalchemy
+pymysql
+requests
+jsonpickle
+redis
+beautifulsoup4
