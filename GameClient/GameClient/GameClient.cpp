@@ -1,178 +1,120 @@
 
 #include "stdafx.h"
-#include "GameClient.h"
+#include "resource.h"
 
-#define MAX_LOADSTRING 100
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-// Global Variables:
-HINSTANCE hInst;                                // current instance
-WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
-// Forward declarations of functions included in this code module:
-ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
-LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+		return true;
 
-    // TODO: Place code here.
+	if (msg == WM_DESTROY)
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
 
-    // Initialize global strings
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_GAMECLIENT, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+// returns TRUE when it is time tio quit the app
+bool ProcessMessageLoop(double endTime)
+{
+	bool bQuit = false;
+	MSG msg;
+	LARGE_INTEGER time;
+	int minProcessedMessages = 3;
+	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	{
+		QueryPerformanceCounter(&time);
+		if (msg.message == WM_QUIT)
+			bQuit = true;
+		else
+		{
+			minProcessedMessages--;
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		if (minProcessedMessages < 0 && time.QuadPart >= endTime)
+			break;
+	}
+	return bQuit;
+}
 
-    // Perform application initialization:
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
+INT WINAPI wWinMain(HINSTANCE hInst, HINSTANCE, LPWSTR, INT)
+{
+	UNREFERENCED_PARAMETER(hInst);
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAMECLIENT));
+	//	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-    MSG msg;
+		// Get the desktop window size
+	RECT desktop;
+	HWND hDesktop = GetDesktopWindow();
+	GetWindowRect(hDesktop, &desktop);
 
-    // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-    }
+	// Register the window class
+	WNDCLASSEX wc =
+	{
+		sizeof(WNDCLASSEX), CS_CLASSDC, MsgProc, 0L, 0L,
+		GetModuleHandle(NULL), LoadIcon(hInst, MAKEINTRESOURCE(IDI_ICON1)), NULL, NULL, NULL,
+		L"ShootingGame", NULL
+	};
+	RegisterClassEx(&wc);
 
-    return (int) msg.wParam;
+	// Create the application's window, leaving a predefined offset to each margin
+	HWND hWnd = CreateWindow(L"ShootingGame", L"Shooting Game - Ubisoft Bucharest Online Academy Support",
+		WS_CAPTION | WS_SYSMENU, WINDOW_OFFSET_X, WINDOW_OFFSET_Y, desktop.right - 2 * WINDOW_OFFSET_X, desktop.bottom - 2 * WINDOW_OFFSET_Y,
+		NULL, NULL, wc.hInstance, NULL);
+
+	// Initialize Direct3D
+	if (SUCCEEDED(Engine::EngineInit(hWnd)))
+	{
+		// Create the game
+		new Game();
+
+		// Show the window
+		ShowWindow(hWnd, SW_SHOWDEFAULT);
+		UpdateWindow(hWnd);
+
+		// Enter the message loop
+		LARGE_INTEGER Frequency;
+		QueryPerformanceFrequency(&Frequency);
+
+		LARGE_INTEGER StartingTime, EndingTime, TimeToFrame;
+		TimeToFrame.QuadPart = 0;
+		QueryPerformanceCounter(&StartingTime);
+
+		while (ProcessMessageLoop(StartingTime.QuadPart + FRAME_TIME * Frequency.QuadPart - TimeToFrame.QuadPart) != true)
+		{
+			if (TimeToFrame.QuadPart >= FRAME_TIME * Frequency.QuadPart)
+			{
+				// Process frame operations
+				float dt = (float)((double)TimeToFrame.QuadPart / (double)Frequency.QuadPart);
+
+				if (dt > 0.1f) dt = 0.1f; // for debug operations, we limit dt to 1/10 sec
+
+				// Be sure to have the latest Gamepad state, that you can poll in the game during the frame
+				Input::UpdateInputState();
+				// Run a game frame
+				Game::g_pGame->RunFrame(dt);
+				TimeToFrame.QuadPart = 0;
+			}
+
+			QueryPerformanceCounter(&EndingTime);
+			TimeToFrame.QuadPart += (EndingTime.QuadPart - StartingTime.QuadPart);
+			StartingTime.QuadPart = EndingTime.QuadPart;
+		}
+
+		// Clean-up game
+		delete Game::g_pGame;
+		Engine::EngineCleanup();
+	}
+
+
+	UnregisterClass(L"ShootingGame", wc.hInstance);
+	return 0;
 }
 
 
 
-//
-//  FUNCTION: MyRegisterClass()
-//
-//  PURPOSE: Registers the window class.
-//
-ATOM MyRegisterClass(HINSTANCE hInstance)
-{
-    WNDCLASSEXW wcex;
-
-    wcex.cbSize = sizeof(WNDCLASSEX);
-
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GAMECLIENT));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_GAMECLIENT);
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-
-    return RegisterClassExW(&wcex);
-}
-
-//
-//   FUNCTION: InitInstance(HINSTANCE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-   hInst = hInstance; // Store instance handle in our global variable
-
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-   if (!hWnd)
-   {
-      return FALSE;
-   }
-
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
-
-   return TRUE;
-}
-
-//
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  PURPOSE: Processes messages for the main window.
-//
-//  WM_COMMAND  - process the application menu
-//  WM_PAINT    - Paint the main window
-//  WM_DESTROY  - post a quit message and return
-//
-//
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    switch (message)
-    {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Parse the menu selections:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
-    case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
-            EndPaint(hWnd, &ps);
-        }
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-    return 0;
-}
-
-// Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
-}

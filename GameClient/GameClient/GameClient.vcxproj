@@ -23,7 +23,7 @@
     <ProjectGuid>{D5EB15E0-965E-4232-980B-5E34205F73EE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>GameClient</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -72,15 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(DXSDK_DIR)Include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(ProjectDir)External\Curl\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(ProjectDir)External\Curl\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(DXSDK_DIR)Include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(ProjectDir)External\Curl\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(DXSDK_DIR)Include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(ProjectDir)External\Curl\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -90,11 +98,20 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(DXSDK_DIR)Include;$(ProjectDir)\External\nlohmann;$(ProjectDir)\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3dx9d.lib;d3d9.lib;XInput.lib;libcurld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>copy /Y /B $(ProjectDir)External\Curl\lib\libcurld.dll $(TargetDir)\libcurld.dll</Command>
+      <Outputs>$(TargetDir)\libcurld.dll</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -102,13 +119,23 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(DXSDK_DIR)Include;$(ProjectDir)\External\nlohmann;$(ProjectDir)\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3dx9d.lib;d3d9.lib;XInput.lib;libcurld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>copy /Y /B $(ProjectDir)External\Curl\lib\libcurld.dll $(TargetDir)\libcurld.dll</Command>
+      <Outputs>$(TargetDir)\libcurld.dll</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -120,13 +147,21 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(DXSDK_DIR)Include;$(ProjectDir)\External\nlohmann;$(ProjectDir)\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;XInput.lib;libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>copy /Y /B $(ProjectDir)External\Curl\lib\libcurld.dll $(TargetDir)\libcurld.dll</Command>
+      <Outputs>$(TargetDir)\libcurld.dll</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -138,22 +173,226 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(DXSDK_DIR)Include;$(ProjectDir)\External\nlohmann;$(ProjectDir)\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;XInput.lib;libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>copy /Y /B $(ProjectDir)External\Curl\lib\libcurld.dll $(TargetDir)\libcurld.dll</Command>
+      <Outputs>$(TargetDir)\libcurld.dll</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GameClient.h" />
+    <ClInclude Include="Engine\Camera.h" />
+    <ClInclude Include="Engine\Constants.h" />
+    <ClInclude Include="Engine\Controller.h" />
+    <ClInclude Include="Engine\Engine.h" />
+    <ClInclude Include="Engine\Object.h" />
+    <ClInclude Include="Engine\Sprite.h" />
+    <ClInclude Include="Engine\Transform2D.h" />
+    <ClInclude Include="Engine\UpdateList.h" />
+    <ClInclude Include="Engine\Utils.h" />
+    <ClInclude Include="Engine\Vector2D.h" />
+    <ClInclude Include="External\cpr\api.h" />
+    <ClInclude Include="External\cpr\auth.h" />
+    <ClInclude Include="External\cpr\body.h" />
+    <ClInclude Include="External\cpr\cookies.h" />
+    <ClInclude Include="External\cpr\cpr.h" />
+    <ClInclude Include="External\cpr\cprtypes.h" />
+    <ClInclude Include="External\cpr\curlholder.h" />
+    <ClInclude Include="External\cpr\defines.h" />
+    <ClInclude Include="External\cpr\digest.h" />
+    <ClInclude Include="External\cpr\error.h" />
+    <ClInclude Include="External\cpr\low_speed.h" />
+    <ClInclude Include="External\cpr\max_redirects.h" />
+    <ClInclude Include="External\cpr\multipart.h" />
+    <ClInclude Include="External\cpr\parameters.h" />
+    <ClInclude Include="External\cpr\payload.h" />
+    <ClInclude Include="External\cpr\proxies.h" />
+    <ClInclude Include="External\cpr\response.h" />
+    <ClInclude Include="External\cpr\session.h" />
+    <ClInclude Include="External\cpr\ssl_options.h" />
+    <ClInclude Include="External\cpr\timeout.h" />
+    <ClInclude Include="External\cpr\util.h" />
+    <ClInclude Include="External\Curl\curl.h" />
+    <ClInclude Include="External\Curl\curlver.h" />
+    <ClInclude Include="External\Curl\easy.h" />
+    <ClInclude Include="External\Curl\mprintf.h" />
+    <ClInclude Include="External\Curl\multi.h" />
+    <ClInclude Include="External\Curl\stdcheaders.h" />
+    <ClInclude Include="External\Curl\system.h" />
+    <ClInclude Include="External\Curl\typecheck-gcc.h" />
+    <ClInclude Include="External\Curl\urlapi.h" />
+    <ClInclude Include="External\imgui\imconfig.h" />
+    <ClInclude Include="External\imgui\imgui.h" />
+    <ClInclude Include="External\imgui\imgui_impl_dx9.h" />
+    <ClInclude Include="External\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="External\imgui\imgui_internal.h" />
+    <ClInclude Include="External\imgui\imstb_rectpack.h" />
+    <ClInclude Include="External\imgui\imstb_textedit.h" />
+    <ClInclude Include="External\imgui\imstb_truetype.h" />
+    <ClInclude Include="External\nlohmann\adl_serializer.hpp" />
+    <ClInclude Include="External\nlohmann\detail\conversions\from_json.hpp" />
+    <ClInclude Include="External\nlohmann\detail\conversions\to_chars.hpp" />
+    <ClInclude Include="External\nlohmann\detail\conversions\to_json.hpp" />
+    <ClInclude Include="External\nlohmann\detail\exceptions.hpp" />
+    <ClInclude Include="External\nlohmann\detail\input\binary_reader.hpp" />
+    <ClInclude Include="External\nlohmann\detail\input\input_adapters.hpp" />
+    <ClInclude Include="External\nlohmann\detail\input\json_sax.hpp" />
+    <ClInclude Include="External\nlohmann\detail\input\lexer.hpp" />
+    <ClInclude Include="External\nlohmann\detail\input\parser.hpp" />
+    <ClInclude Include="External\nlohmann\detail\input\position_t.hpp" />
+    <ClInclude Include="External\nlohmann\detail\iterators\internal_iterator.hpp" />
+    <ClInclude Include="External\nlohmann\detail\iterators\iteration_proxy.hpp" />
+    <ClInclude Include="External\nlohmann\detail\iterators\iterator_traits.hpp" />
+    <ClInclude Include="External\nlohmann\detail\iterators\iter_impl.hpp" />
+    <ClInclude Include="External\nlohmann\detail\iterators\json_reverse_iterator.hpp" />
+    <ClInclude Include="External\nlohmann\detail\iterators\primitive_iterator.hpp" />
+    <ClInclude Include="External\nlohmann\detail\json_pointer.hpp" />
+    <ClInclude Include="External\nlohmann\detail\json_ref.hpp" />
+    <ClInclude Include="External\nlohmann\detail\macro_scope.hpp" />
+    <ClInclude Include="External\nlohmann\detail\macro_unscope.hpp" />
+    <ClInclude Include="External\nlohmann\detail\meta\cpp_future.hpp" />
+    <ClInclude Include="External\nlohmann\detail\meta\detected.hpp" />
+    <ClInclude Include="External\nlohmann\detail\meta\is_sax.hpp" />
+    <ClInclude Include="External\nlohmann\detail\meta\type_traits.hpp" />
+    <ClInclude Include="External\nlohmann\detail\meta\void_t.hpp" />
+    <ClInclude Include="External\nlohmann\detail\output\binary_writer.hpp" />
+    <ClInclude Include="External\nlohmann\detail\output\output_adapters.hpp" />
+    <ClInclude Include="External\nlohmann\detail\output\serializer.hpp" />
+    <ClInclude Include="External\nlohmann\detail\value_t.hpp" />
+    <ClInclude Include="External\nlohmann\json.hpp" />
+    <ClInclude Include="External\nlohmann\json_fwd.hpp" />
+    <ClInclude Include="Game\Controllers\AnimationController.h" />
+    <ClInclude Include="Game\Controllers\ColorFlowController.h" />
+    <ClInclude Include="Game\Controllers\SinusoidalBehaviourController.h" />
+    <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\GameImpl\ObjectPool.h" />
+    <ClInclude Include="Game\GameImpl\ResourceManager.h" />
+    <ClInclude Include="Game\HUD\Interfaces\MenuGameTimer.h" />
+    <ClInclude Include="Game\HUD\PageManager.h" />
+    <ClInclude Include="Game\HUD\Pages\InGameInterface.h" />
+    <ClInclude Include="Game\HUD\Pages\LoadingScreen.h" />
+    <ClInclude Include="Game\HUD\Pages\MenuGamePause.h" />
+    <ClInclude Include="Game\HUD\Pages\StartMenuPage.h" />
+    <ClInclude Include="Game\Network\GameStateSynchronizer.h" />
+    <ClInclude Include="Game\Network\MessageReciever.h" />
+    <ClInclude Include="Game\Network\Messages\ChatMessage.h" />
+    <ClInclude Include="Game\Network\Messages\EventMessage.h" />
+    <ClInclude Include="Game\Network\Messages\NetMessage.h" />
+    <ClInclude Include="Game\Network\Messages\ServerResponse.h" />
+    <ClInclude Include="Game\Network\Messages\TimeSynchroniationMessage.h" />
+    <ClInclude Include="Game\Network\NetObject.h" />
+    <ClInclude Include="Game\Network\NetObjectAPI.h" />
+    <ClInclude Include="IO\Input.h" />
+    <ClInclude Include="IO\InputProxy.h" />
+    <ClInclude Include="IO\json-builder.h" />
+    <ClInclude Include="IO\json.h" />
+    <ClInclude Include="IO\Serializable.h" />
+    <ClInclude Include="IO\Stream.h" />
+    <ClInclude Include="Menu\ButtonContainer.h" />
+    <ClInclude Include="Menu\Font.h" />
+    <ClInclude Include="Menu\MenuButton.h" />
+    <ClInclude Include="Menu\MenuItem.h" />
+    <ClInclude Include="Menu\MenuItemContainer.h" />
+    <ClInclude Include="Network\NetAddr.h" />
+    <ClInclude Include="Network\NetInit.h" />
+    <ClInclude Include="Network\NetSocket.h" />
+    <ClInclude Include="Network\ReliableUDP.h" />
+    <ClInclude Include="Online\FutureHandler.h" />
+    <ClInclude Include="Online\ServiceAPI\Endpoints.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Sound\Sound.h" />
+    <ClInclude Include="Sound\Wave.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Camera.cpp" />
+    <ClCompile Include="Engine\Controller.cpp" />
+    <ClCompile Include="Engine\Engine.cpp" />
+    <ClCompile Include="Engine\Object.cpp" />
+    <ClCompile Include="Engine\Sprite.cpp" />
+    <ClCompile Include="Engine\UpdateList.cpp" />
+    <ClCompile Include="Engine\Utils.cpp" />
+    <ClCompile Include="Engine\Vector2D.cpp" />
+    <ClCompile Include="External\imgui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui_impl_dx9.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui_impl_win32.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="GameClient.cpp" />
+    <ClCompile Include="Game\Controllers\AnimationController.cpp" />
+    <ClCompile Include="Game\Controllers\ColorFlowController.cpp" />
+    <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="Game\GameImpl\ObjectPool.cpp" />
+    <ClCompile Include="Game\GameImpl\ResourceManager.cpp" />
+    <ClCompile Include="Game\HUD\Interfaces\MenuGameTimer.cpp" />
+    <ClCompile Include="Game\HUD\PageManager.cpp" />
+    <ClCompile Include="Game\HUD\Pages\InGameInterface.cpp" />
+    <ClCompile Include="Game\HUD\Pages\LoadingScreen.cpp" />
+    <ClCompile Include="Game\HUD\Pages\MenuGamePause.cpp" />
+    <ClCompile Include="Game\HUD\Pages\StartMenuPage.cpp" />
+    <ClCompile Include="Game\Network\GameStateSynchronizer.cpp" />
+    <ClCompile Include="Game\Network\MessageReciever.cpp" />
+    <ClCompile Include="Game\Network\Messages\ChatMessage.cpp" />
+    <ClCompile Include="Game\Network\Messages\NetMessage.cpp" />
+    <ClCompile Include="Game\Network\Messages\ServerResponse.cpp" />
+    <ClCompile Include="Game\Network\Messages\TimeSynchroniationMessage.cpp" />
+    <ClCompile Include="Game\Network\NetObject.cpp" />
+    <ClCompile Include="Game\Network\NetObjectAPI.cpp" />
+    <ClCompile Include="IO\Input.cpp" />
+    <ClCompile Include="IO\InputProxy.cpp" />
+    <ClCompile Include="IO\json-builder.cpp" />
+    <ClCompile Include="IO\json.cpp" />
+    <ClCompile Include="Menu\ButtonContainer.cpp" />
+    <ClCompile Include="Menu\Font.cpp" />
+    <ClCompile Include="Menu\MenuButton.cpp" />
+    <ClCompile Include="Menu\MenuItem.cpp" />
+    <ClCompile Include="Menu\MenuItemContainer.cpp" />
+    <ClCompile Include="Network\NetAddr.cpp" />
+    <ClCompile Include="Network\NetSocket.cpp" />
+    <ClCompile Include="Network\ReliableUDP.cpp" />
+    <ClCompile Include="Sound\Sound.cpp" />
+    <ClCompile Include="Sound\Wave.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
