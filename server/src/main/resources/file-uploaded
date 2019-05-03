@@ -1,0 +1,22 @@
+[
+    {
+
+        "name":"vasya",
+        "score":1234
+    },
+    {
+        "id_u":6,
+        "name":"petya",
+        "score":1334
+    },
+    {
+        "id_u":8,
+        "name":"kolya",
+        "score":1488
+    },
+    {
+        "id_u":9,
+        "name":"tolya",
+        "score":314
+    }
+]
